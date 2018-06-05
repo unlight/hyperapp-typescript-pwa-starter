@@ -1,0 +1,56 @@
+{
+  "name": "hyperapp-typescript-pwa-starter",
+  "version": "0.0.0-d",
+  "license": "MIT",
+  "description": "Template for hyperapp projects",
+  "main": "dist/index.js",
+  "typings": "src/index.ts",
+  "scripts": {
+    "_setup": "npm i -g commitizen semantic-release-cli",
+    "t": "npm run mocha -- src/*.spec.ts",
+    "test": "npm run eslint && npm run tscheck && npm run t",
+    "test:r": "npm run mocha -- src/*.spec.ts",
+    "mocha": "node -r ts-node/register/transpile-only node_modules/mocha/bin/_mocha",
+    "test:w": "npm run mocha -- --watch-extensions ts --watch src/**/*.spec.ts",
+    "test:d": "node --inspect-brk -r ts-node/register/transpile-only node_modules/mocha/bin/_mocha --no-timeouts src/**/*.spec.ts",
+    "tscheck": "echo tscheck... && tsc --noEmit",
+    "tscheck:w": "npm run tscheck -- --watch",
+    "tsclint": "tsc --noEmit --pretty false --strictNullChecks --forceConsistentCasingInFileNames --noImplicitReturns --noImplicitThis --noUnusedLocals --noUnusedParameters",
+    "tsclint:w": "npm run tsclint -- --watch",
+    "eslint": "eslint src --ext ts",
+    "eslint:fix": "eslint src --ext \"ts\" --fix",
+    "eslint:w": "chokidar \"src/**/*.ts\" --initial -c \"npm run eslint\"",
+    "lint:w": "concurrently -- \"npm run tsclint:w\" \"npm run eslint:w\"",
+    "build": "tsc",
+    "prebuild": "npm run clean",
+    "clean": "rimraf dist",
+    "commit": "git-cz"
+  },
+  "dependencies": {
+    "@hyperapp/html": "^1.1.1",
+    "hyperapp": "^1.2.6",
+    "tslib": "^1.9.0"
+  },
+  "devDependencies": {
+    "@types/mocha": "^5.2.0",
+    "@types/node": "^10.0.6",
+    "chokidar-cli": "^1.2.0",
+    "concurrently__replace__by_npm_run_all": "^3.5.1",
+    "eslint": "^4.19.1",
+    "eslint-plugin-import": "^2.11.0",
+    "eslint-plugin-tslint": "^2.1.0",
+    "eslint-plugin-typescript": "^0.12.0",
+    "eslint-plugin-unicorn": "^4.0.3",
+    "mocha": "^5.1.1",
+    "rimraf": "^2.6.2",
+    "ts-node": "^6.0.3",
+    "tslint": "^5.10.0",
+    "typescript": "2.8.3",
+    "typescript-eslint-parser": "^15.0.0"
+  },
+  "engines": {
+    "node": ">=6",
+    "npm": ">=3"
+  },
+  "keywords": []
+}
