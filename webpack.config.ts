@@ -152,6 +152,12 @@ export = (options: ConfigOptions = {}) => {
             rules: [
                 { parser: { amd: false } },
                 {
+                    test: /\.js$/,
+                    exclude: sourcePath,
+                    enforce: 'pre',
+                    use: loader('source-map'),
+                },
+                {
                     test: transpileTypeScript,
                     use: (() => {
                         const tsOptions = { transpileOnly: true, compilerOptions: {} };
