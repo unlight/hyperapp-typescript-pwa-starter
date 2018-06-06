@@ -161,6 +161,9 @@ export = (options: ConfigOptions = {}) => {
                     test: transpileTypeScript,
                     use: (() => {
                         const tsOptions = { transpileOnly: true, compilerOptions: {} };
+                        if (options.dev) {
+                            tsOptions.compilerOptions['target'] = 'es2017';
+                        }
                         if (options.prod) {
                             tsOptions.compilerOptions['target'] = 'es5';
                         }

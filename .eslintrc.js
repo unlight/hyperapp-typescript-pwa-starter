@@ -17,7 +17,6 @@ const tslintRules = Object.assign({}, tslintRulesRecommended, {
     "align": false,
     "trailing-comma": false,
     "no-string-literal": false,
-    "no-namespace": false,
     "interface-name": false,
     "no-angle-bracket-type-assertion": false,
     "whitespace": false,

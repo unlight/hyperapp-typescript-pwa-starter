@@ -1,25 +1,23 @@
 import { h, app, ActionsType, View, ActionResult } from 'hyperapp';
 
-export namespace Counter {
-    export interface State {
-        count: number;
-        busy: boolean;
-    }
-
-    export interface Actions {
-        busy(value: boolean): State;
-        down(): State;
-        up(value: number): State;
-        upAsync(value: number): ActionResult<State>;
-    }
+export interface State {
+    count: number;
+    busy: boolean;
 }
 
-export const state: Counter.State = {
+export interface Actions {
+    busy(value: boolean): State;
+    down(): State;
+    up(value: number): State;
+    upAsync(value: number): ActionResult<State>;
+}
+
+export const state: State = {
     count: 0,
     busy: false,
 };
 
-export const actions: ActionsType<Counter.State, Counter.Actions> = {
+export const actions: ActionsType<State, Actions> = {
     busy: (value: boolean) => state => ({ busy: value }),
     down: () => state => ({ count: state.count - 1 }),
     up: (value: number) => state => {
@@ -37,7 +35,7 @@ export const actions: ActionsType<Counter.State, Counter.Actions> = {
     },
 };
 
-export const view: View<Counter.State, Counter.Actions> = (state, actions) => {
+export const view: View<State, Actions> = (state, actions) => {
     return <main>
         <button>{state.count}</button>
         <button disabled={state.busy} onclick={actions.down}>down</button>
