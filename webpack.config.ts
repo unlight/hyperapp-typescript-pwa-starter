@@ -149,7 +149,6 @@ export = (options: ConfigOptions = {}) => {
         },
         watchOptions,
         module: {
-            exprContextCritical: false,
             rules: [
                 { parser: { amd: false } },
                 {
@@ -199,10 +198,6 @@ export = (options: ConfigOptions = {}) => {
         plugins: (() => {
             const WatchIgnorePlugin = require('webpack/lib/WatchIgnorePlugin');
             const result: any[] = [];
-            //     new WatchIgnorePlugin([
-            //         /node_modules/
-            //     ]),
-            // ];
             if (options.hmr) {
                 result.push(new webpack.NamedModulesPlugin());
             }
@@ -226,30 +221,32 @@ export = (options: ConfigOptions = {}) => {
             //     const uglifyOptions = {};
             //     result.push(new UglifyJsPlugin({ sourceMap: true, uglifyOptions }));
             // }
-            // if (options.prod) {
-            //     const ModuleConcatenationPlugin = require('webpack/lib/optimize/ModuleConcatenationPlugin');
-            //     // const CopyWebpackPlugin = require('copy-webpack-plugin');
-            //     const LoaderOptionsPlugin = require('webpack/lib/LoaderOptionsPlugin');
-            //     const DefinePlugin = require('webpack/lib/DefinePlugin');
-            //     result.push(
-            //         new DefinePlugin({
-            //             'process.env.NODE_ENV': JSON.stringify('production'),
-            //         }),
-            //         new ModuleConcatenationPlugin(),
-            //         new LoaderOptionsPlugin({
-            //             minimize: options.minimize,
-            //             debug: false,
-            //             options: { context }
-            //         }),
-            //     );
-            // }
-            // if (options.prod) {
-            //     result.push(
-            //         new ExtractTextPlugin({
-            //             filename: (get) => get('[name]-[contenthash:6].css')
-            //         })
-            //     );
-            // }
+            if (options.prod) {
+                //     const ModuleConcatenationPlugin = require('webpack/lib/optimize/ModuleConcatenationPlugin');
+                const CopyWebpackPlugin = require('copy-webpack-plugin');
+                result.push(new CopyWebpackPlugin([
+                    { from: 'src/manifest.json', to: undefined },
+                    { from: 'resources/*.{png,ico,html}', context: 'src', to: undefined },
+                ]));
+                //     const LoaderOptionsPlugin = require('webpack/lib/LoaderOptionsPlugin');
+                //     const DefinePlugin = require('webpack/lib/DefinePlugin');
+                // result.push(
+                //         new DefinePlugin({
+                //             'process.env.NODE_ENV': JSON.stringify('production'),
+                //         }),
+                //         new ModuleConcatenationPlugin(),
+                //         new LoaderOptionsPlugin({
+                //             minimize: options.minimize,
+                //             debug: false,
+                //             options: { context }
+                //         }),
+                // );
+                // }
+                //     result.push(
+                //         new ExtractTextPlugin({
+                //             filename: (get) => get('[name]-[contenthash:6].css')
+                //         })
+            }
 
             // const envName = ('env_name' in process.env) ? process.env.env_name : undefined;
             // const environmentFile = `src/environment.${envName}.ts`;
