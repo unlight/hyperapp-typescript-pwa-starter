@@ -1,6 +1,5 @@
 ## TODO
 * add tslint tslint-react
-* testing
 * service worker
 * manifest file
 
