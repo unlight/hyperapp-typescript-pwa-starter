@@ -1,7 +1,8 @@
 ## TODO
 * add tslint tslint-react
 * testing
-* hot reload
+* service worker
+* manifest file
 
 ## RESOURCES
 * https://github.com/lukejacksonn/hyperapp-pwa

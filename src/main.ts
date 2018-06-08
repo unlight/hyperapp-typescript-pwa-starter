@@ -1,9 +1,13 @@
+import { location } from '@hyperapp/router';
+
 function main() {
     const { render } = require('./app/app');
-    render();
+    const result = render();
+    return result;
 }
 
-main();
+const app = main();
+const unsubscribe = location.subscribe(app.location);
 
 if (module.hot) {
     module.hot.accept('./app/app', main);
