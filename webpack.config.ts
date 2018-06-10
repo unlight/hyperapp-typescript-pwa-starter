@@ -167,8 +167,8 @@ export = (options: ConfigOptions = {}) => {
                     })(),
                 },
                 {
-                    test: /index\.ejs$/,
-                    use: [loader('ejs')],
+                    test: /index\.html$/,
+                    use: [loader('html', { minimize: true })],
                 },
                 {
                     test: /\.css$/,
@@ -219,7 +219,7 @@ export = (options: ConfigOptions = {}) => {
                 const HtmlWebpackPlugin = require('html-webpack-plugin');
                 const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin');
                 result.push(new HtmlWebpackPlugin({
-                    template: './src/index.ejs',
+                    template: './src/index.html',
                     inject: 'head',
                     minify: false,
                     excludeChunks: [],
@@ -333,7 +333,7 @@ export = (options: ConfigOptions = {}) => {
             config.entry = false as any;
         }
         if (options.dev && !options.coverage) {
-            const libs = `${buildPath}/libs.json`; // check name in src/index.ejs
+            const libs = `${buildPath}/libs.json`; // check name in src/index.html
             if (!fs.existsSync(libs)) {
                 console.log(`\nCannot link '${libs}', executing npm run build:libs`);
                 execa.sync('npm', ['run', 'build:libs'], { stdio: 'inherit' });
