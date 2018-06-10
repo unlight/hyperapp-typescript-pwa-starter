@@ -1,3 +1,4 @@
+/// <reference path="node_modules/typescript/lib/lib.esnext.d.ts" />
 /* eslint-disable no-console, import/max-dependencies */
 import * as fs from 'fs';
 import * as path from 'path';
@@ -82,14 +83,6 @@ export = (options: ConfigOptions = {}) => {
                     'webpack/hot/emitter',
                     'webpack/hot/log-apply-result',
                     // 'webpack/hot/dev-server', // DONT! It will break HMR
-                    // 'react-hot-loader/patch',
-                    // 'events',
-                    // 'base64-js',
-                    // 'buffer',
-                    // 'ieee754',
-                    // 'css-loader/lib/css-base',
-                    // 'style-loader/lib/addStyles',
-                    // 'style-loader/lib/urls',
                 ];
             })(),
             style: './src/style.scss',
@@ -152,7 +145,7 @@ export = (options: ConfigOptions = {}) => {
             rules: [
                 { parser: { amd: false } },
                 {
-                    test: /\.js$/,
+                    test: /\.(js|css)$/,
                     exclude: sourcePath,
                     enforce: 'pre',
                     use: loader('source-map'),
@@ -160,7 +153,7 @@ export = (options: ConfigOptions = {}) => {
                 {
                     test: transpileTypeScript,
                     use: (() => {
-                        const tsOptions = { transpileOnly: true, compilerOptions: { module: 'es2015'} };
+                        const tsOptions = { transpileOnly: true, compilerOptions: { module: 'es2015' } };
                         if (options.dev) {
                             tsOptions.compilerOptions['target'] = 'es2017';
                         }
@@ -204,6 +197,18 @@ export = (options: ConfigOptions = {}) => {
                 },
             ],
         },
+        optimization: {
+            minimize: options.minimize,
+            minimizer: (() => {
+                const result: any[] = [];
+                if (options.minimize) {
+                    const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+                    const uglifyOptions = { output: { comments: false } };
+                    result.push(new UglifyJsPlugin({ sourceMap: true, uglifyOptions }));
+                }
+                return result;
+            })(),
+        },
         plugins: (() => {
             const WatchIgnorePlugin = require('webpack/lib/WatchIgnorePlugin');
             const result: any[] = [];
@@ -225,61 +230,39 @@ export = (options: ConfigOptions = {}) => {
                 }));
 
             }
-            // if (options.minimize) {
-            //     const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
-            //     const uglifyOptions = {};
-            //     result.push(new UglifyJsPlugin({ sourceMap: true, uglifyOptions }));
-            // }
             if (options.prod) {
-                //     const ModuleConcatenationPlugin = require('webpack/lib/optimize/ModuleConcatenationPlugin');
+                const ModuleConcatenationPlugin = require('webpack/lib/optimize/ModuleConcatenationPlugin');
                 const CopyWebpackPlugin = require('copy-webpack-plugin');
                 result.push(new CopyWebpackPlugin([
                     { from: 'src/manifest.json', to: undefined },
                     { from: 'resources/*.{png,ico,html}', context: 'src', to: undefined },
                 ]));
-                //     const LoaderOptionsPlugin = require('webpack/lib/LoaderOptionsPlugin');
-                //     const DefinePlugin = require('webpack/lib/DefinePlugin');
-                // result.push(
-                //         new DefinePlugin({
-                //             'process.env.NODE_ENV': JSON.stringify('production'),
-                //         }),
-                //         new ModuleConcatenationPlugin(),
-                //         new LoaderOptionsPlugin({
-                //             minimize: options.minimize,
-                //             debug: false,
-                //             options: { context }
-                //         }),
-                // );
+                const LoaderOptionsPlugin = require('webpack/lib/LoaderOptionsPlugin');
+                result.push(
+                    new webpack.DefinePlugin({
+                        'process.env.NODE_ENV': JSON.stringify('production'),
+                    }),
+                    new ModuleConcatenationPlugin(),
+                    new LoaderOptionsPlugin({
+                        minimize: options.minimize,
+                        debug: false,
+                        options: { context }
+                    }),
+                );
                 // }
                 //     result.push(
                 //         new ExtractTextPlugin({
                 //             filename: (get) => get('[name]-[contenthash:6].css')
-                //         })
+                // })
             }
-
-            // const envName = ('env_name' in process.env) ? process.env.env_name : undefined;
-            // const environmentFile = `src/environment.${envName}.ts`;
-            // if (options.dev && !options.test && envName && fs.existsSync(environmentFile)) {
-            //     process.stdout.write(`environment: ${envName} `);
-            //     const NormalModuleReplacementPlugin = require('webpack/lib/NormalModuleReplacementPlugin');
-            //     result.push(
-            //         new NormalModuleReplacementPlugin(
-            //             /src.environment\.ts$/,
-            //             result => {
-            //                 result.resource = Path.resolve(environmentFile);
-            //             }
-            //         )
-            //     );
-            // }
-
-            // const CircularDependencyPlugin = require('circular-dependency-plugin');
-            // result.push(
-            //     new CircularDependencyPlugin({
-            //         exclude: /node_modules/,
-            //         failOnError: true,
-            //     })
-            // );
-
+            const envName = ('env_name' in process.env) ? process.env.env_name : undefined;
+            const environmentFile = `src/environment.${envName}.ts`;
+            if (options.dev && !options.test && envName && fs.existsSync(environmentFile)) {
+                process.stdout.write(`environment: ${envName} `);
+                result.push(new webpack.NormalModuleReplacementPlugin(/src[/\\]environment\.ts$/, result => result.resource = Path.resolve(environmentFile)));
+            }
+            const CircularDependencyPlugin = require('circular-dependency-plugin');
+            result.push(new CircularDependencyPlugin({ exclude: /node_modules/, failOnError: true }));
             return result;
         })(),
     };
