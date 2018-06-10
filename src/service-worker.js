@@ -1,4 +1,4 @@
-const CACHE_NAME = 'hyperapp-pwa-0.0.1';
+const CACHE_NAME = 'hyperapp-0.0.1';
 
 self.addEventListener('install', function(event) {
     event.waitUntil(
