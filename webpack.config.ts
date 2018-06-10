@@ -168,7 +168,7 @@ export = (options: ConfigOptions = {}) => {
                 },
                 {
                     test: /index\.html$/,
-                    use: [loader('html', { minimize: true })],
+                    use: [loader('html', { minimize: false })],
                 },
                 {
                     test: /\.css$/,
@@ -210,7 +210,6 @@ export = (options: ConfigOptions = {}) => {
             })(),
         },
         plugins: (() => {
-            const WatchIgnorePlugin = require('webpack/lib/WatchIgnorePlugin');
             const result: any[] = [];
             if (options.hmr) {
                 result.push(new webpack.NamedModulesPlugin());
@@ -228,7 +227,6 @@ export = (options: ConfigOptions = {}) => {
                 result.push(new ScriptExtHtmlWebpackPlugin({
                     defaultAttribute: 'defer'
                 }));
-
             }
             if (options.prod) {
                 const ModuleConcatenationPlugin = require('webpack/lib/optimize/ModuleConcatenationPlugin');
@@ -254,7 +252,17 @@ export = (options: ConfigOptions = {}) => {
                 //         new ExtractTextPlugin({
                 //             filename: (get) => get('[name]-[contenthash:6].css')
                 // })
+
             }
+            // TODO: Move to prod?
+            const OfflinePlugin = require('offline-plugin');
+            result.push(new OfflinePlugin({
+                ServiceWorker: {
+                    entry: './src/service-worker.ts',
+                    output: 'service-worker.js'
+                }
+            }));
+
             const envName = ('env_name' in process.env) ? process.env.env_name : undefined;
             const environmentFile = `src/environment.${envName}.ts`;
             if (options.dev && !options.test && envName && fs.existsSync(environmentFile)) {

@@ -17,3 +17,20 @@ const unsubscribe = location.subscribe(app.location);
 if (module.hot) {
     module.hot.accept('./app/app', main);
 }
+
+require('offline-plugin/runtime').install({
+    onInstalled: function() {
+        // openOfflineReady();
+    },
+
+    onUpdating: function() {
+
+    },
+
+    onUpdateReady: function() {
+        // offlinePlugin.applyUpdate();
+    },
+    onUpdated: function() {
+        window.location.reload();
+    }
+});
