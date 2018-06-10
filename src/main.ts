@@ -1,4 +1,9 @@
 import { location } from '@hyperapp/router';
+import { FastClick } from 'fastclick';
+
+if ('addEventListener' in document) {
+    document.addEventListener('DOMContentLoaded', () => FastClick.attach(document.body), false);
+}
 
 function main() {
     const { render } = require('./app/app');

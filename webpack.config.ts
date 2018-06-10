@@ -9,7 +9,7 @@ import * as execa from 'execa';
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const pkg = require('./package.json');
 const sourcePath = path.join(__dirname, 'src');
-const distPath = path.join(__dirname, 'dist');
+const buildPath = path.join(__dirname, 'dist');
 const context = __dirname;
 
 const defaultOptions = {
@@ -95,7 +95,7 @@ export = (options: ConfigOptions = {}) => {
             style: './src/style.scss',
         },
         output: {
-            path: distPath,
+            path: buildPath,
             publicPath: '',
             chunkFilename: (() => {
                 if (options.prod) {
@@ -123,7 +123,7 @@ export = (options: ConfigOptions = {}) => {
             https: false,
             overlay: true,
             noInfo: false,
-            contentBase: [sourcePath, distPath],
+            contentBase: [sourcePath, buildPath],
             port: 8610,
             historyApiFallback: true,
             hot: true,
@@ -292,14 +292,14 @@ export = (options: ConfigOptions = {}) => {
                 entry: pick(['libs'], config.entry), // check name near DllReferencePlugin
                 devtool: 'source-map',
                 output: {
-                    path: distPath,
+                    path: buildPath,
                     filename: '[name].js',
                     library: '[name]',
                 },
                 plugins: [
                     new webpack.DllPlugin({
                         name: '[name]',
-                        path: `${distPath}/[name].json`
+                        path: `${buildPath}/[name].json`
                     }),
                 ]
             }
@@ -350,7 +350,7 @@ export = (options: ConfigOptions = {}) => {
             config.entry = false as any;
         }
         if (options.dev && !options.coverage) {
-            const libs = `${distPath}/libs.json`; // check name in src/index.ejs
+            const libs = `${buildPath}/libs.json`; // check name in src/index.ejs
             if (!fs.existsSync(libs)) {
                 console.log(`\nCannot link '${libs}', executing npm run build:libs`);
                 execa.sync('npm', ['run', 'build:libs'], { stdio: 'inherit' });
@@ -371,7 +371,7 @@ export = (options: ConfigOptions = {}) => {
             // const toBoolean = require('to-boolean');
             // config.plugins.push(new AddAssetHtmlPlugin({ filepath: Path.resolve(distPath, style), typeOfAsset: 'css', includeSourcemap: toBoolean(options.devtool) }));
             if (options.dev) {
-                config.plugins.push(new AddAssetHtmlPlugin({ filepath: `${distPath}/libs.js`, typeOfAsset: 'js' }));
+                config.plugins.push(new AddAssetHtmlPlugin({ filepath: `${buildPath}/libs.js`, typeOfAsset: 'js' }));
             }
         }
     }
