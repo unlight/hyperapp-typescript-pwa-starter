@@ -13,7 +13,7 @@ function main() {
 }
 
 const app = main();
-const unsubscribe = location.subscribe(app.location);
+location.subscribe(app.location); // unsubscribe
 
 if (module.hot) {
     module.hot.accept('./app/app', main);

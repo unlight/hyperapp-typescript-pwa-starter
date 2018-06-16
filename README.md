@@ -15,6 +15,9 @@ Template for hyperapp projects.
 * add tslint tslint-react
 * https://developers.google.com/web/fundamentals/app-install-banners/
 * Move to prod? offline plugin
+* deploy app to device
+* database (gundb)
+* how to detect offline (dirty checking)
 
 ## RESOURCES
 * https://github.com/lukejacksonn/hyperapp-pwa

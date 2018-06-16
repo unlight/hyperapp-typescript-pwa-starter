@@ -25,6 +25,3 @@ export function render() {
     }, document.body);
     return app;
 }
-
-
-
