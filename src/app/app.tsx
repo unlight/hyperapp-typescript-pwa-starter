@@ -12,12 +12,19 @@ export function render() {
     }
     const app = hyperapp(state, actions, () => {
         return <main>
-            <Link to="/">Home</Link> /
+            <div class="row flex-center">
+                <div class="col sm-12">
+                    <Link to="/">Home</Link> /
                 / <Link to="/about">About</Link>
-            <hr />
-            <Route path="/" render={Home} />
-            <Route path="/about" render={() => <h4>About</h4>} />
+                    <hr />
+                    <Route path="/" render={Home} />
+                    <Route path="/about" render={() => <h4>About</h4>} />
+                </div>
+            </div>
         </main>;
     }, document.body);
     return app;
 }
+
+
+

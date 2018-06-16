@@ -7,6 +7,8 @@ import changed = require('is-changed');
 const g = require('gulp-load-plugins')();
 import log = require('fancy-log');
 import execa = require('execa');
+import del = require('del');
+import glob = require('glob');
 
 const buildPath = path.join(__dirname, 'dist');
 
@@ -17,7 +19,7 @@ gulp.task('build:libs', async () => {
     }
     if (libsChanged.diff) {
         for (const [pkname, version] of Object.entries(libsChanged.diff)) {
-           log(`${pkname} ${(version.$set)}`);
+            log(`${pkname} ${(version.$set)}`);
         }
     }
     log(('Need npm install'));
@@ -28,27 +30,19 @@ gulp.task('build:libs', async () => {
 });
 
 // Builds style for development only.
-// gulp.task('build:style', () => {
-//     const styleChanged = changed.file(`src/style.scss`, Path.resolve(buildPath, '.style.dat'));
-//     if (styleChanged.result) {
-//         del.sync(`${buildPath}/style.css`);
-//     }
-//     return new Promise((resolve, reject) => {
-//         let [style] = glob.sync(`${buildPath}/style.css`);
-//         if (!style) {
-//             const proc = spawn('npm', ['run', 'build:style'], { stdio: 'inherit' });
-//             proc.on('error', reject);
-//             proc.once('exit', () => {
-//                 styleChanged.update();
-//                 resolve();
-//             });
-//         } else {
-//             resolve();
-//         }
-//     });
-// });
+gulp.task('build:style', async () => {
+    const styleChanged = changed.file(`src/style.scss`, path.resolve(buildPath, '.style.dat'));
+    if (styleChanged.result) {
+        del.sync(`${buildPath}/style.css`);
+    }
+    let [style] = glob.sync(`${buildPath}/style.css`);
+    if (!style) {
+        await execa('npm', ['run', 'build:style'], { stdio: 'inherit' });
+        styleChanged.update();
+    }
+});
 
 gulp.task('preserver', gulp.series(...[
     'build:libs',
-    // 'build:style',
+    'build:style',
 ]));

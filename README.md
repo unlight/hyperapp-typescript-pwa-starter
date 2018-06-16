@@ -1,7 +1,20 @@
+# hyperapp-typescript-starter
+Template for hyperapp projects.
+
+## DEVELOPMENT
+* Environment variable `webpack_devtool`  
+  Choose a style of source mapping to enhance the debugging process  
+  Available values: https://webpack.js.org/configuration/devtool/#devtool  
+  Default: `cheap-source-map`
+* Environment variable `env_name`  
+  Allow to override providers depending on environment
+  Default: none (`src/environment.ts` will be used)
+* To enable sourcemaps for css, you must set `webpack_devtool = source-map`
+
 ## TODO
 * add tslint tslint-react
-* service worker (as ts)
 * https://developers.google.com/web/fundamentals/app-install-banners/
+* Move to prod? offline plugin
 
 ## RESOURCES
 * https://github.com/lukejacksonn/hyperapp-pwa

@@ -31,6 +31,10 @@ const defaultOptions = {
     get devtool(): string {
         return ('webpack_devtool' in process.env) ? process.env.webpack_devtool : 'cheap-source-map';
     },
+    get sourceMap(): boolean {
+        const devtool = this.devtool;
+        return (!devtool || devtool === '0') ? false : true;
+    },
     get mode() {
         return this.prod ? 'production' : 'development';
     }
@@ -178,9 +182,9 @@ export = (options: ConfigOptions = {}) => {
                     test: /\.scss$/,
                     use: (() => {
                         let use: any[] = [
-                            loader('css', { importLoaders: 2, sourceMap: false, minimize: options.minimize }),
-                            loader('postcss', { plugins: postPlugins, sourceMap: false }),
-                            loader('sass', { sourceMap: false, includePaths: ['node_modules/@blueprint/core/src'] }),
+                            loader('css', { importLoaders: 2, sourceMap: options.sourceMap, minimize: options.minimize }),
+                            loader('postcss', { plugins: postPlugins, sourceMap: options.sourceMap }),
+                            loader('sass', { sourceMap: options.sourceMap, includePaths: ['node_modules/papercss/src'] }),
                         ];
                         if (options.prod && !options.style) {
                             use = ExtractTextPlugin.extract({ use });
@@ -192,7 +196,9 @@ export = (options: ConfigOptions = {}) => {
                     })(),
                 },
                 {
-                    test: /\.(woff|woff2|eot|ttf|png|svg)$/,
+                    test: function fileLoaderTest(file: string) {
+                        return /\.(woff|woff2|eot|ttf|png|svg)$/.test(file);
+                    },
                     use: [loader('file', { name: `i/[name]${options.prod ? '-[hash:6]' : ''}.[ext]` })],
                 },
             ],
@@ -247,12 +253,7 @@ export = (options: ConfigOptions = {}) => {
                         options: { context }
                     }),
                 );
-                // }
-                //     result.push(
-                //         new ExtractTextPlugin({
-                //             filename: (get) => get('[name]-[contenthash:6].css')
-                // })
-
+                result.push(new ExtractTextPlugin({ filename: (get) => get(`[name]${options.prod ? '-[hash:6]' : ''}.css`) }));
             }
             // TODO: Move to prod?
             const OfflinePlugin = require('offline-plugin');
@@ -305,35 +306,33 @@ export = (options: ConfigOptions = {}) => {
                 }
                 return false;
             });
-        // } else if (options.style) {
-        //     // Make config for style build.
-        //     config = {
-        //         ...config,
-        //         ...{
-        //             entry: pick(['style'], config.entry),
-        //             plugins: [
-        //                 new ExtractTextPlugin(`[name]${options.prod ? '-[contenthash:6]' : ''}.css`),
-        //                 // Duck typed plugin, removes dummy.js after extract text plugin.
-        //                 {
-        //                     apply(compiler) {
-        //                         compiler.hooks.emit.tap('webpack.config.ts', (compilation) => {
-        //                             delete compilation.assets['dummy.js'];
-        //                             delete compilation.assets['dummy.js.map'];
-        //                         });
-        //                     }
-        //                 }
-        //             ]
-        //         }
-        //     };
-        //     const styleAssetsRule = config.module.rules.find(r => String(r.test) === '/\\.(woff|woff2|eot|ttf|png|svg)$/');
-        //     const { use: styleLoaders } = config.module.rules.find(r => String(r.test) === '/\\.scss$/');
-        //     config.module.rules = [
-        //         styleAssetsRule,
-        //         { test: /\.scss$/, use: ExtractTextPlugin.extract({ use: styleLoaders }) },
-        //     ];
-        //     config.output.filename = `dummy.js`;
-        //     config.stats.assets = false;
-        //     config.stats.maxModules = 10;
+    } else if (options.style) {
+            // Make config for style build.
+            config = {
+                ...config,
+                ...{
+                    entry: pick(['style'], config.entry),
+                    plugins: [
+                        new ExtractTextPlugin({ filename: (get) => get(`[name]${options.prod ? '-[hash:6]' : ''}.css`) }),
+                        // Duck typed plugin, removes dummy.js after extract text plugin.
+                        {
+                            apply(compiler) {
+                                compiler.hooks.emit.tap('webpack.config.ts', (compilation) => {
+                                    delete compilation.assets['dummy.js'];
+                                    delete compilation.assets['dummy.js.map'];
+                                });
+                            }
+                        }
+                    ]
+                }
+            };
+            const styleAssetsRule = config.module.rules.find((r: any) => r.test && r.test.name === 'fileLoaderTest');
+            const { use: styleLoaders } = config.module.rules.find(r => String(r.test) === '/\\.scss$/');
+            config.module.rules = [
+                styleAssetsRule,
+                { test: /\.scss$/, use: ExtractTextPlugin.extract({ use: styleLoaders }) },
+            ];
+            config.output.filename = `dummy.js`;
     } else {
         // Make config for app build.
         config.entry = pick(['app'], config.entry);
@@ -350,17 +349,15 @@ export = (options: ConfigOptions = {}) => {
         }
         if (!options.test) {
             const AddAssetHtmlPlugin = require('add-asset-html-webpack-plugin');
-            // const glob = require('glob');
-            // const stylePattern = `style${options.dev ? '' : '-*'}`;
-            // let [style] = glob.sync(`${distPath}/${stylePattern}.css`);
-            // if (!style) {
-            //     const spawn = require('cross-spawn');
-            //     console.log('\nStyle was not found, executing npm run build:style');
-            //     spawn.sync('npm', ['run', `build:style${options.prod ? ':prod' : ''}`], { stdio: 'inherit' });
-            //     [style] = glob.sync(`${distPath}/${stylePattern}.css`);
-            // }
-            // const toBoolean = require('to-boolean');
-            // config.plugins.push(new AddAssetHtmlPlugin({ filepath: Path.resolve(distPath, style), typeOfAsset: 'css', includeSourcemap: toBoolean(options.devtool) }));
+            const glob = require('glob');
+            const stylePattern = `style${options.dev ? '' : '-*'}`;
+            let [style] = glob.sync(`${buildPath}/${stylePattern}.css`);
+            if (!style) {
+                console.log('\nStyle was not found, executing npm run build:style');
+                execa.sync('npm', ['run', `build:style${options.prod ? ':prod' : ''}`], { stdio: 'inherit' });
+                [style] = glob.sync(`${buildPath}/${stylePattern}.css`);
+            }
+            config.plugins.push(new AddAssetHtmlPlugin({ filepath: style, typeOfAsset: 'css', includeSourcemap: options.sourceMap }));
             if (options.dev) {
                 config.plugins.push(new AddAssetHtmlPlugin({ filepath: `${buildPath}/libs.js`, typeOfAsset: 'js' }));
             }
