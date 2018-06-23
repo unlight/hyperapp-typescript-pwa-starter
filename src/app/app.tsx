@@ -14,8 +14,7 @@ export function render() {
         return <main>
             <div class="row flex-center">
                 <div class="col sm-12">
-                    <Link to="/">Home</Link> /
-                / <Link to="/about">About</Link>
+                    <Link to="/">Home</Link> // <Link to="/about">About</Link>
                     <hr />
                     <Route path="/" render={Home} />
                     <Route path="/about" render={() => <h4>About</h4>} />

@@ -12,6 +12,9 @@
     "outDir": "dist",
     "pretty": false,
     "removeComments": false,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "skipLibCheck": true,
     "sourceMap": true,
     "lib": [
       "dom",
@@ -22,6 +25,7 @@
     "src/**/*.ts"
   ],
   "exclude": [
+    "node_modules",
     "src/**/*.spec.ts"
   ]
 }

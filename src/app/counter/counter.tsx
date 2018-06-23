@@ -1,33 +1,21 @@
 import { h, app, ActionsType, View, ActionResult } from 'hyperapp';
 
-export interface State {
-    count: number;
-    busy: boolean;
-}
-
-export const state: State = {
+export const state = {
     count: 0,
     busy: false,
 };
 
-export interface Actions {
-    busy(value: boolean): State;
-    down(): State;
-    up(value: number): State;
-    upAsync(value: number): ActionResult<State>;
-    getState(): State;
-    getCount(): number;
-}
+export type State = typeof state;
 
-export const actions: ActionsType<State, Actions> = {
-    busy: (value: boolean) => state => ({ busy: value }),
-    down: () => state => ({ count: state.count - 1 }),
-    up: (value: number) => state => {
+export const actions = {
+    busy: (value: boolean) => (state: State) => ({ busy: value }),
+    down: () => (state: State) => ({ count: state.count - 1 }),
+    up: (value: number) => (state: State) => {
         return {
             count: state.count + value
         };
     },
-    upAsync: (value: number) => async (state, actions) => {
+    upAsync: (value: number) => async (state: State, actions: Actions) => {
         actions.busy(true);
         await new Promise((resolve) => {
             setTimeout(resolve, 500);
@@ -35,9 +23,11 @@ export const actions: ActionsType<State, Actions> = {
         actions.busy(false);
         return actions.up(5);
     },
-    getState: () => state => state,
-    getCount: () => state => state.count,
+    getState: () => (state: State) => state,
+    getCount: () => (state: State) => state.count,
 };
+
+export type Actions = typeof actions;
 
 export const view: View<State, Actions> = (state, actions) => {
     return <div>

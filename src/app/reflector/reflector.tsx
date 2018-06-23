@@ -1,22 +1,18 @@
 import { h, app, ActionsType, View, ActionResult } from 'hyperapp';
 
-export interface State {
-    value: string;
-}
-
-export const state: State = {
+export const state = {
     value: ''
 };
 
-export interface Actions {
-    setValue(newValue: string): State;
-}
+export type State = typeof state;
 
-export const actions: ActionsType<State, Actions> = {
-    setValue: (newValue: string) => state => {
+export const actions = {
+    setValue: (newValue: string) => (state: State) => {
         return { value: newValue };
     }
 };
+
+export type Actions = typeof actions;
 
 export const view: View<State, Actions> = (state, actions) => {
     return <div>
