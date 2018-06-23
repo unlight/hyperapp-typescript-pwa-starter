@@ -12,7 +12,7 @@ Template for hyperapp projects.
 * To enable sourcemaps for css, you must set `webpack_devtool = source-map`
 
 ## TODO
-* add tslint tslint-react
+* add tslint tslint-react (when eslint-plugin-tslint will be fixed)
 * https://developers.google.com/web/fundamentals/app-install-banners/
 * Move to prod? offline plugin
 * deploy app to device

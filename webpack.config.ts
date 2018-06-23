@@ -307,32 +307,27 @@ export = (options: ConfigOptions = {}) => {
                 return false;
             });
     } else if (options.style) {
-            // Make config for style build.
-            config = {
-                ...config,
-                ...{
-                    entry: pick(['style'], config.entry),
-                    plugins: [
+        // Make config for style build.
+        config = {
+            ...config,
+            ...{
+                entry: pick(['style'], config.entry),
+                plugins: (() => {
+                    const RemoveAssetsPlugin = require('webpack-remove-assets-plugin');
+                    return [
                         new ExtractTextPlugin({ filename: (get) => get(`[name]${options.prod ? '-[hash:6]' : ''}.css`) }),
-                        // Duck typed plugin, removes dummy.js after extract text plugin.
-                        {
-                            apply(compiler) {
-                                compiler.hooks.emit.tap('webpack.config.ts', (compilation) => {
-                                    delete compilation.assets['dummy.js'];
-                                    delete compilation.assets['dummy.js.map'];
-                                });
-                            }
-                        }
-                    ]
-                }
-            };
-            const styleAssetsRule = config.module.rules.find((r: any) => r.test && r.test.name === 'fileLoaderTest');
-            const { use: styleLoaders } = config.module.rules.find(r => String(r.test) === '/\\.scss$/');
-            config.module.rules = [
-                styleAssetsRule,
-                { test: /\.scss$/, use: ExtractTextPlugin.extract({ use: styleLoaders }) },
-            ];
-            config.output.filename = `dummy.js`;
+                        new RemoveAssetsPlugin({regex: /dummy/}),
+                    ];
+                })(),
+            }
+        };
+        const styleAssetsRule = config.module.rules.find((r: any) => r.test && r.test.name === 'fileLoaderTest');
+        const { use: styleLoaders } = config.module.rules.find(r => String(r.test) === '/\\.scss$/');
+        config.module.rules = [
+            styleAssetsRule,
+            { test: /\.scss$/, use: ExtractTextPlugin.extract({ use: styleLoaders }) },
+        ];
+        config.output.filename = `dummy.js`;
     } else {
         // Make config for app build.
         config.entry = pick(['app'], config.entry);

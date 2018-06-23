@@ -13,7 +13,7 @@ import rimraf = require('rimraf');
 const buildPath = join(__dirname, 'dist');
 
 gulp.task('build:libs', async () => {
-    const libsChanged = changed.dependencies(path.resolve(buildPath, '.libs.dat'));
+    const libsChanged = changed.dependencies(resolve(buildPath, '.libs.dat'));
     if (!libsChanged.result && existsSync(`${buildPath}/libs.json`) && existsSync(`${buildPath}/libs.js`)) {
         return;
     }
