@@ -1,0 +1,8 @@
+{
+  "ignore": {
+    "ts-node": {
+      "versions": "7.0.0",
+      "reason": "Typechecking is not by default"
+    }
+  }
+}

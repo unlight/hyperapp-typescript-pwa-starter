@@ -1,6 +1,7 @@
 import { app as hyperapp, h } from 'hyperapp';
 import { Link, Route, location } from '@hyperapp/router';
 import { Home } from './home';
+import { Nav } from './nav';
 
 export function render() {
     const actions = {
@@ -14,8 +15,7 @@ export function render() {
         return <main>
             <div class="row flex-center">
                 <div class="col sm-12">
-                    <Link to="/">Home</Link> // <Link to="/about">About</Link>
-                    <hr />
+                    <Nav />
                     <Route path="/" render={Home} />
                     <Route path="/about" render={() => <h4>About</h4>} />
                 </div>

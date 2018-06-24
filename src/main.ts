@@ -1,6 +1,6 @@
 import { location } from '@hyperapp/router';
 import { FastClick } from 'fastclick';
-import './style.scss';
+import './app/app.scss';
 
 if ('addEventListener' in document) {
     document.addEventListener('DOMContentLoaded', () => FastClick.attach(document.body), false);
