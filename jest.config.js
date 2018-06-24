@@ -14,6 +14,7 @@ module.exports = {
         'src/**/*.tsx',
         '!src/**/*.spec.ts',
         '!src/**/*.spec.tsx',
+        '!src/**/*.d.ts',
     ],
     'testMatch': [
         '<rootDir>/src/**/*.spec.ts',
