@@ -21,7 +21,7 @@ export const actions = {
             setTimeout(resolve, 500);
         });
         actions.busy(false);
-        return actions.up(5);
+        return actions.up(value);
     },
     getState: () => (state: State) => state,
     getCount: () => (state: State) => state.count,

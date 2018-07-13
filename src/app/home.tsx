@@ -15,6 +15,11 @@ export function Home() {
         <div oncreate={element => {
             reflectorActions = app(reflector.state, reflector.actions, reflector.view, element);
         }}></div>
-        <button onclick={e => reflectorActions.setValue(String(counterActions.getCount()))}>set counter value to reflector</button>
+        <button onclick={reflectorSetValue}>set counter value to reflector</button>
     </div>;
+}
+
+function reflectorSetValue(e) {
+    const value = counter.actions.getCount().toString();
+    reflector.actions.setValue(value);
 }
